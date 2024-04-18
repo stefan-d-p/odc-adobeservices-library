@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>Without.Systems.AdobeServices.Library</AssemblyName>
+        <RootNamespace>Without.Systems.AdobeServices</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Adobe.PDFServicesSDK" Version="3.4.1" />
+        <PackageReference Include="OutSystems.ExternalLibraries.SDK" Version="1.4.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\CreateDocument.svg" />
+      <None Remove="Resources\AdobeServices.png" />
+      <EmbeddedResource Include="Resources\AdobeServices.png" />
+      <None Remove="Resources\ExportDocument.svg" />
+      <None Remove="Resources\CreateDocument.png" />
+      <EmbeddedResource Include="Resources\CreateDocument.png" />
+      <None Remove="Resources\ExportDocument.png" />
+      <EmbeddedResource Include="Resources\ExportDocument.png" />
+      <None Remove="Resources\LinearizeDocument.png" />
+      <EmbeddedResource Include="Resources\LinearizeDocument.png" />
+      <None Remove="Resources\OcrDocument.png" />
+      <EmbeddedResource Include="Resources\OcrDocument.png" />
+    </ItemGroup>
+
+</Project>
