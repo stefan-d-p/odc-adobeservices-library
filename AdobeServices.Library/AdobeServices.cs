@@ -1,12 +1,8 @@
-﻿using Adobe.PDFServicesSDK;
-using Adobe.PDFServicesSDK.auth;
+﻿using Adobe.PDFServicesSDK.auth;
 using Adobe.PDFServicesSDK.core;
 using Adobe.PDFServicesSDK.pdfops;
 using Adobe.PDFServicesSDK.io;
-using Adobe.PDFServicesSDK.options.createpdf;
 using Adobe.PDFServicesSDK.options.exportpdf;
-using Adobe.PDFServicesSDK.options.ocr;
-using OutSystems.ExternalLibraries.SDK;
 using ExecutionContext = Adobe.PDFServicesSDK.ExecutionContext;
 
 namespace Without.Systems.AdobeServices;
