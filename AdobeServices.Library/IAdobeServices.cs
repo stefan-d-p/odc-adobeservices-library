@@ -1,4 +1,5 @@
 using OutSystems.ExternalLibraries.SDK;
+using Without.Systems.AdobeServices.Structures;
 
 namespace Without.Systems.AdobeServices
 {
@@ -25,13 +26,9 @@ namespace Without.Systems.AdobeServices
                 DataType = OSDataType.Text)]
             string clientSecret,
             [OSParameter(
-                Description = "Source document to convert to PDF",
-                DataType = OSDataType.BinaryData)]
-            byte[] fileData,
-            [OSParameter(
-                Description = "Filename of source document including extension",
-                DataType = OSDataType.Text)]
-            string fileName);
+                Description = "Source document and filename",
+                DataType = OSDataType.InferredFromDotNetType)]
+            FileAsset fileAsset);
 
         [OSAction(
             Description = "Convert a PDF File to a non-PDF File",
@@ -48,13 +45,9 @@ namespace Without.Systems.AdobeServices
                 DataType = OSDataType.Text)]
             string clientSecret,
             [OSParameter(
-                Description = "Source PDF document to convert",
-                DataType = OSDataType.BinaryData)]
-            byte[] fileData,
-            [OSParameter(
-                Description = "Filename of source PDF document including pdf extension",
-                DataType = OSDataType.Text)]
-            string fileName,
+                Description = "Source document and filename",
+                DataType = OSDataType.InferredFromDotNetType)]
+            FileAsset fileAsset,
             [OSParameter(
                 Description = "Format to convert the pdf document to. Allows values are doc, rtf, docx, pptx, xlsx",
                 DataType = OSDataType.Text)]
@@ -75,13 +68,9 @@ namespace Without.Systems.AdobeServices
                 DataType = OSDataType.Text)]
             string clientSecret,
             [OSParameter(
-                Description = "Source PDF document to perform OCR on",
-                DataType = OSDataType.BinaryData)]
-            byte[] fileData,
-            [OSParameter(
-                Description = "Filename of source PDF document including pdf extension",
-                DataType = OSDataType.Text)]
-            string fileName);
+                Description = "Source document and filename",
+                DataType = OSDataType.InferredFromDotNetType)]
+            FileAsset fileAsset);
         
         [OSAction(
             Description = "Linearize (optimize for Webview) a PDF document",
@@ -98,13 +87,9 @@ namespace Without.Systems.AdobeServices
                 DataType = OSDataType.Text)]
             string clientSecret,
             [OSParameter(
-                Description = "Source PDF document to linearize",
-                DataType = OSDataType.BinaryData)]
-            byte[] fileData,
-            [OSParameter(
-                Description = "Filename of source PDF document including pdf extension",
-                DataType = OSDataType.Text)]
-            string fileName);
+                Description = "Source document and filename",
+                DataType = OSDataType.InferredFromDotNetType)]
+            FileAsset fileAsset);
 
         [OSAction(
             Description = "Convert all pages of a PDF document to images",
@@ -121,13 +106,9 @@ namespace Without.Systems.AdobeServices
                 DataType = OSDataType.Text)]
             string clientSecret,
             [OSParameter(
-                Description = "Source PDF document for page imaging",
-                DataType = OSDataType.BinaryData)]
-            byte[] fileData,
-            [OSParameter(
-                Description = "Filename of source PDF document including pdf extension",
-                DataType = OSDataType.Text)]
-            string fileName,
+                Description = "Source document and filename",
+                DataType = OSDataType.InferredFromDotNetType)]
+            FileAsset fileAsset,
             [OSParameter(
                 Description = "Target format of images. Allows values are png and jpeg",
                 DataType = OSDataType.Text)]

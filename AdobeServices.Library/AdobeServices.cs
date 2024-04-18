@@ -4,6 +4,7 @@ using Adobe.PDFServicesSDK.pdfops;
 using Adobe.PDFServicesSDK.io;
 using Adobe.PDFServicesSDK.options.exportpdf;
 using Adobe.PDFServicesSDK.options.exportpdftoimages;
+using Without.Systems.AdobeServices.Structures;
 using ExecutionContext = Adobe.PDFServicesSDK.ExecutionContext;
 
 namespace Without.Systems.AdobeServices;
@@ -15,20 +16,19 @@ public class AdobeServices : IAdobeServices
     /// </summary>
     /// <param name="clientId">Adobe Services Client Id</param>
     /// <param name="clientSecret">Adobe Services Secret Key</param>
-    /// <param name="fileData">Source document binary data</param>
-    /// <param name="fileName">Source document filename including extension</param>
+    /// <param name="fileAsset">Source document binary data and filename</param>
     /// <returns>Binary data of PDF document</returns>
     public byte[] CreateDocument(string clientId,
-        string clientSecret, byte[] fileData, string fileName)
+        string clientSecret, FileAsset fileAsset)
     {
         ExecutionContext executionContext = CreateExecutionContext(clientId, clientSecret);
         
         CreatePDFOperation createPdfOperation = CreatePDFOperation.CreateNew();
         
-        using (MemoryStream sourceDocumentStream = new MemoryStream(fileData))
+        using (MemoryStream sourceDocumentStream = new MemoryStream(fileAsset.FileData))
         using (MemoryStream targetDocumentStream = new MemoryStream())
         {
-            FileRef inputDocumentRef = FileRef.CreateFromStream(sourceDocumentStream, MimeTypesMap.GetMimeType(fileName));
+            FileRef inputDocumentRef = FileRef.CreateFromStream(sourceDocumentStream, MimeTypesMap.GetMimeType(fileAsset.FileName));
             createPdfOperation.SetInput(inputDocumentRef);
             
             FileRef outputDocumentRef = createPdfOperation.Execute(executionContext);
@@ -39,16 +39,16 @@ public class AdobeServices : IAdobeServices
         }
     }
 
-    public byte[] ExportDocument(string clientId, string clientSecret, byte[] fileData, string fileName, string targetFormat)
+    public byte[] ExportDocument(string clientId, string clientSecret, FileAsset fileAsset, string targetFormat)
     {
         ExecutionContext executionContext = CreateExecutionContext(clientId, clientSecret);
         
         ExportPDFOperation exportPdfOperation = ExportPDFOperation.CreateNew(GetExportTargetFormat(targetFormat));
         
-        using (MemoryStream sourceDocumentStream = new MemoryStream(fileData))
+        using (MemoryStream sourceDocumentStream = new MemoryStream(fileAsset.FileData))
         using (MemoryStream targetDocumentStream = new MemoryStream())
         {
-            FileRef inputDocumentRef = FileRef.CreateFromStream(sourceDocumentStream, MimeTypesMap.GetMimeType(fileName));
+            FileRef inputDocumentRef = FileRef.CreateFromStream(sourceDocumentStream, MimeTypesMap.GetMimeType(fileAsset.FileName));
             exportPdfOperation.SetInput(inputDocumentRef);
  
             FileRef outputDocumentRef = exportPdfOperation.Execute(executionContext);
@@ -57,16 +57,16 @@ public class AdobeServices : IAdobeServices
         }
     }
 
-    public byte[] OcrDocument(string clientId, string clientSecret, byte[] fileData, string fileName)
+    public byte[] OcrDocument(string clientId, string clientSecret, FileAsset fileAsset)
     {
         ExecutionContext executionContext = CreateExecutionContext(clientId, clientSecret);
 
         OCROperation ocrOperation = OCROperation.CreateNew();
         
-        using (MemoryStream sourceDocumentStream = new MemoryStream(fileData))
+        using (MemoryStream sourceDocumentStream = new MemoryStream(fileAsset.FileData))
         using (MemoryStream targetDocumentStream = new MemoryStream())
         {
-            FileRef inputDocumentRef = FileRef.CreateFromStream(sourceDocumentStream, MimeTypesMap.GetMimeType(fileName));
+            FileRef inputDocumentRef = FileRef.CreateFromStream(sourceDocumentStream, MimeTypesMap.GetMimeType(fileAsset.FileName));
             ocrOperation.SetInput(inputDocumentRef);
             FileRef outputDocumentRef = ocrOperation.Execute(executionContext);
             outputDocumentRef.SaveAs(targetDocumentStream);
@@ -74,17 +74,17 @@ public class AdobeServices : IAdobeServices
         }
     }
 
-    public byte[] LinearizeDocument(string clientId, string clientSecret, byte[] fileData, string fileName)
+    public byte[] LinearizeDocument(string clientId, string clientSecret, FileAsset fileAsset)
     {
         ExecutionContext executionContext = CreateExecutionContext(clientId, clientSecret);
         
         LinearizePDFOperation linearizePdfOperation = LinearizePDFOperation.CreateNew();
         
-        using (MemoryStream sourceDocumentStream = new MemoryStream(fileData))
+        using (MemoryStream sourceDocumentStream = new MemoryStream(fileAsset.FileData))
         using (MemoryStream targetDocumentStream = new MemoryStream())
         {
             FileRef inputDocumentRef =
-                FileRef.CreateFromStream(sourceDocumentStream, MimeTypesMap.GetMimeType(fileName));
+                FileRef.CreateFromStream(sourceDocumentStream, MimeTypesMap.GetMimeType(fileAsset.FileName));
             linearizePdfOperation.SetInput(inputDocumentRef);
             FileRef outputDocumentRef = linearizePdfOperation.Execute(executionContext);
             outputDocumentRef.SaveAs(targetDocumentStream);
@@ -92,7 +92,7 @@ public class AdobeServices : IAdobeServices
         }
     }
 
-    public byte[] ImageDocument(string clientId, string clientSecret, byte[] fileData, string fileName,
+    public byte[] ImageDocument(string clientId, string clientSecret, FileAsset fileAsset,
         string targetFormat)
     {
         ExecutionContext executionContext = CreateExecutionContext(clientId, clientSecret);
@@ -100,10 +100,10 @@ public class AdobeServices : IAdobeServices
         
         exportPdfToImagesOperation.SetOutputType(ExportPDFToImagesOutputType.ZIP_OF_IMAGES);
         
-        using (MemoryStream sourceDocumentStream = new MemoryStream(fileData))
+        using (MemoryStream sourceDocumentStream = new MemoryStream(fileAsset.FileData))
         using (MemoryStream targetDocumentStream = new MemoryStream())
         {
-            FileRef inputDocumentRef = FileRef.CreateFromStream(sourceDocumentStream, MimeTypesMap.GetMimeType(fileName));
+            FileRef inputDocumentRef = FileRef.CreateFromStream(sourceDocumentStream, MimeTypesMap.GetMimeType(fileAsset.FileName));
             exportPdfToImagesOperation.SetInput(inputDocumentRef);
             List<FileRef> outputDocumentRefs = exportPdfToImagesOperation.Execute(executionContext);
             outputDocumentRefs.First().SaveAs(targetDocumentStream);

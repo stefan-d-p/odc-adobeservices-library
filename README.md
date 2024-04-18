@@ -17,8 +17,7 @@ Create PDF document from Microsoft Office documents (Word, Excel and PowerPoint)
 
 * `clientId` - Adobe Services Client Id
 * `clientSecret` - Adobe Services Secret Key
-* `fileData` - Source document to convert to PDF
-* `fileName` - Filename of source document including extension
+* `fileAsset` - Source document binary data and filename
 
 **Returns**
 
@@ -32,8 +31,7 @@ Convert a PDF File to a non-PDF File
 
 * `clientId` - Adobe Services Client Id
 * `clientSecret` - Adobe Services Secret Key
-* `fileData` - Source document to convert
-* `fileName` - Filename of source document including extension
+* `fileAsset` - Source document binary data and filename
 * `targetFormat` - Format to convert the pdf document to. Allows values are doc, rtf, docx, pptx, xlsx
 
 **Returns**
@@ -48,8 +46,7 @@ Perform Optical Character Recognition (OCR) on a PDF document
 
 * `clientId` - Adobe Services Client Id
 * `clientSecret` - Adobe Services Secret Key
-* `fileData` - Source PDF document to perform OCR on
-* `fileName` - Filename of source document including extension
+* `fileAsset` - Source document binary data and filename
 
 **Returns**
 
@@ -63,8 +60,7 @@ Linearize (optimize for Webview) a PDF document
 
 * `clientId` - Adobe Services Client Id
 * `clientSecret` - Adobe Services Secret Key
-* `fileData` - Source PDF document to linearize
-* `fileName` - Filename of source document including extension
+* `fileAsset` - Source document binary data and filename
 
 **Returns**
 
@@ -78,8 +74,7 @@ Extracts all pages of a PDF document as images
 
 * `clientId` - Adobe Services Client Id
 * `clientSecret` - Adobe Services Secret Key
-* `fileData` - Source PDF document to extract page images
-* `fileName` - Filename of source document including extension
+* `fileAsset` - Source document binary data and filename
 * `targetFormat` - Image format. Allowed values are png and jpeg
 
 **Returns**

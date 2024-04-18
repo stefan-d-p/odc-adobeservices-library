@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using Without.Systems.AdobeServices.Structures;
 
 namespace Without.Systems.AdobeServices.Test;
 
@@ -24,7 +25,7 @@ public class Tests
     public void Convert_MicrosoftWord_ToPDF()
     {
         byte[] inputFile = File.ReadAllBytes(@"docs\SampleDOC.docx");
-        var result = _actions.CreateDocument(ClientId, ClientSecret, inputFile, "sampledoc.docx");
+        var result = _actions.CreateDocument(ClientId, ClientSecret, FileAsset.Create(inputFile, "sampledoc.docx"));
         Assert.That(result, Is.Not.Null);
     }
 
@@ -32,7 +33,7 @@ public class Tests
     public void Convert_PDF_ToMicrosoftWord()
     {
         byte[] inputFile = File.ReadAllBytes(@"docs\SamplePDF.pdf");
-        var result = _actions.ExportDocument(ClientId, ClientSecret, inputFile, "samplepdf.pdf","docx");
+        var result = _actions.ExportDocument(ClientId, ClientSecret, FileAsset.Create(inputFile, "samplepdf.pdf"), "docx");
         Assert.That(result, Is.Not.Null);
     }
 
@@ -40,7 +41,7 @@ public class Tests
     public void Convert_PDF_ToImages()
     {
         byte[] inputFile = File.ReadAllBytes(@"docs\SamplePDF.pdf");
-        var result = _actions.ImageDocument(ClientId, ClientSecret, inputFile, "samplepdf.pdf","png");
+        var result = _actions.ImageDocument(ClientId, ClientSecret, FileAsset.Create(inputFile, "samplepdf.pdf"), "png");
         Assert.That(result, Is.Not.Null);
     }
 }
