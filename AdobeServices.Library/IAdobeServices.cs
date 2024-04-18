@@ -105,5 +105,32 @@ namespace Without.Systems.AdobeServices
                 Description = "Filename of source PDF document including pdf extension",
                 DataType = OSDataType.Text)]
             string fileName);
+
+        [OSAction(
+            Description = "Convert all pages of a PDF document to images",
+            ReturnName = "zip",
+            ReturnType = OSDataType.BinaryData,
+            ReturnDescription = "ZIP archive containing the image files",
+            IconResourceName = "Without.Systems.AdobeServices.Resources.ImageDocument.png")]
+        byte[] ImageDocument([OSParameter(
+                Description = "Adobe Services Client Id",
+                DataType = OSDataType.Text)]
+            string clientId,
+            [OSParameter(
+                Description = "Adobe Services Client Secret",
+                DataType = OSDataType.Text)]
+            string clientSecret,
+            [OSParameter(
+                Description = "Source PDF document for page imaging",
+                DataType = OSDataType.BinaryData)]
+            byte[] fileData,
+            [OSParameter(
+                Description = "Filename of source PDF document including pdf extension",
+                DataType = OSDataType.Text)]
+            string fileName,
+            [OSParameter(
+                Description = "Target format of images. Allows values are png and jpeg",
+                DataType = OSDataType.Text)]
+            string targetFormat);
     }
 }

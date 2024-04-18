@@ -3,6 +3,7 @@ using Adobe.PDFServicesSDK.core;
 using Adobe.PDFServicesSDK.pdfops;
 using Adobe.PDFServicesSDK.io;
 using Adobe.PDFServicesSDK.options.exportpdf;
+using Adobe.PDFServicesSDK.options.exportpdftoimages;
 using ExecutionContext = Adobe.PDFServicesSDK.ExecutionContext;
 
 namespace Without.Systems.AdobeServices;
@@ -91,6 +92,28 @@ public class AdobeServices : IAdobeServices
         }
     }
 
+    public byte[] ImageDocument(string clientId, string clientSecret, byte[] fileData, string fileName,
+        string targetFormat)
+    {
+        ExecutionContext executionContext = CreateExecutionContext(clientId, clientSecret);
+        ExportPDFToImagesOperation  exportPdfToImagesOperation = ExportPDFToImagesOperation.CreateNew(GetExportPDFImagesTargetFormat(targetFormat));
+        
+        exportPdfToImagesOperation.SetOutputType(ExportPDFToImagesOutputType.ZIP_OF_IMAGES);
+        
+        using (MemoryStream sourceDocumentStream = new MemoryStream(fileData))
+        using (MemoryStream targetDocumentStream = new MemoryStream())
+        {
+            FileRef inputDocumentRef = FileRef.CreateFromStream(sourceDocumentStream, MimeTypesMap.GetMimeType(fileName));
+            exportPdfToImagesOperation.SetInput(inputDocumentRef);
+            List<FileRef> outputDocumentRefs = exportPdfToImagesOperation.Execute(executionContext);
+            outputDocumentRefs.First().SaveAs(targetDocumentStream);
+            return targetDocumentStream.ToArray();
+        }
+
+    }
+    
+    
+
     /// <summary>
     /// Build Execution context with credentials
     /// </summary>
@@ -120,6 +143,19 @@ public class AdobeServices : IAdobeServices
                 return ExportPDFTargetFormat.PPTX;
             case "xlsx":
                 return ExportPDFTargetFormat.XLSX;
+            default:
+                throw new ArgumentException($"Invalid target format of {targetFormat}");
+        }
+    }
+    
+    private ExportPDFToImagesTargetFormat GetExportPDFImagesTargetFormat(string targetFormat)
+    {
+        switch (targetFormat.ToLower())
+        {
+            case "png":
+                return ExportPDFToImagesTargetFormat.PNG;
+            case "jpeg":
+                return ExportPDFToImagesTargetFormat.JPEG;
             default:
                 throw new ArgumentException($"Invalid target format of {targetFormat}");
         }

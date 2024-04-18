@@ -26,6 +26,8 @@
       <EmbeddedResource Include="Resources\LinearizeDocument.png" />
       <None Remove="Resources\OcrDocument.png" />
       <EmbeddedResource Include="Resources\OcrDocument.png" />
+      <None Remove="Resources\ImageDocument.png" />
+      <EmbeddedResource Include="Resources\ImageDocument.png" />
     </ItemGroup>
 
 </Project>

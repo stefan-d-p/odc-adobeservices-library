@@ -35,4 +35,12 @@ public class Tests
         var result = _actions.ExportDocument(ClientId, ClientSecret, inputFile, "samplepdf.pdf","docx");
         Assert.That(result, Is.Not.Null);
     }
+
+    [Test]
+    public void Convert_PDF_ToImages()
+    {
+        byte[] inputFile = File.ReadAllBytes(@"docs\SamplePDF.pdf");
+        var result = _actions.ImageDocument(ClientId, ClientSecret, inputFile, "samplepdf.pdf","png");
+        Assert.That(result, Is.Not.Null);
+    }
 }

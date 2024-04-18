@@ -70,6 +70,22 @@ Linearize (optimize for Webview) a PDF document
 
 * `pdf` - Linearized PDF document binary data
 
+### ImageDocument
+
+Extracts all pages of a PDF document as images
+
+**Input Parameters**
+
+* `clientId` - Adobe Services Client Id
+* `clientSecret` - Adobe Services Secret Key
+* `fileData` - Source PDF document to extract page images
+* `fileName` - Filename of source document including extension
+* `targetFormat` - Image format. Allowed values are png and jpeg
+
+**Returns**
+
+* `zip` - ZIP archive binary data containing the extracted images
+
 # Run Tests
 
 To run the nUnit tests you first have to provide your Adobe Services credentials as a secret
