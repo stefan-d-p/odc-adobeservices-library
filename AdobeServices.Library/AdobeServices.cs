@@ -4,6 +4,7 @@ using Adobe.PDFServicesSDK.pdfops;
 using Adobe.PDFServicesSDK.io;
 using Adobe.PDFServicesSDK.options.exportpdf;
 using Adobe.PDFServicesSDK.options.exportpdftoimages;
+using Adobe.PDFServicesSDK.options.protectpdf;
 using Without.Systems.AdobeServices.Structures;
 using ExecutionContext = Adobe.PDFServicesSDK.ExecutionContext;
 
@@ -43,7 +44,7 @@ public class AdobeServices : IAdobeServices
     {
         ExecutionContext executionContext = CreateExecutionContext(clientId, clientSecret);
         
-        ExportPDFOperation exportPdfOperation = ExportPDFOperation.CreateNew(GetExportTargetFormat(targetFormat));
+        ExportPDFOperation exportPdfOperation = ExportPDFOperation.CreateNew(ParseExportTargetFormat(targetFormat));
         
         using (MemoryStream sourceDocumentStream = new MemoryStream(fileAsset.FileData))
         using (MemoryStream targetDocumentStream = new MemoryStream())
@@ -96,7 +97,7 @@ public class AdobeServices : IAdobeServices
         string targetFormat)
     {
         ExecutionContext executionContext = CreateExecutionContext(clientId, clientSecret);
-        ExportPDFToImagesOperation  exportPdfToImagesOperation = ExportPDFToImagesOperation.CreateNew(GetExportPDFImagesTargetFormat(targetFormat));
+        ExportPDFToImagesOperation  exportPdfToImagesOperation = ExportPDFToImagesOperation.CreateNew(ParseExportPdfImagesTargetFormat(targetFormat));
         
         exportPdfToImagesOperation.SetOutputType(ExportPDFToImagesOutputType.ZIP_OF_IMAGES);
         
@@ -110,6 +111,53 @@ public class AdobeServices : IAdobeServices
             return targetDocumentStream.ToArray();
         }
 
+    }
+
+    public byte[] ProtectDocument(string clientId, string clientSecret, FileAsset fileAsset, ProtectDocumentOptions options)
+    {
+        ExecutionContext executionContext = CreateExecutionContext(clientId, clientSecret);
+        
+        var builder = ProtectPDFOptions.PasswordProtectOptionsBuilder();
+        if (!string.IsNullOrEmpty(options.EncryptionAlgorithm))
+        {
+            builder.SetEncryptionAlgorithm(ParseEncryptionAlgorithm(options.EncryptionAlgorithm));
+        }
+        else
+        {
+            throw new ArgumentException("Encryption Algorithm must be specified");
+        }
+
+        if (!string.IsNullOrEmpty(options.OwnerPassword))
+        {
+            builder.SetOwnerPassword(options.OwnerPassword);
+        }
+        else
+        {
+            throw new ArgumentException("Owner password must be specified");
+        }
+
+        if (!string.IsNullOrEmpty(options.UserPassword))
+            builder.SetUserPassword(options.UserPassword);
+        if (!string.IsNullOrEmpty(options.ContentEncryption))
+        {
+            builder.SetContentEncryption(ParseContentEncryption(options.ContentEncryption));
+        }
+       
+        if (options.Permissions != null)
+            builder.SetPermissions(ParsePermissions(options.Permissions.ToArray()));
+        ProtectPDFOptions protectDocumentOptions = builder.Build();
+
+        ProtectPDFOperation protectPdfOperation = ProtectPDFOperation.CreateNew(protectDocumentOptions);
+        
+        using (MemoryStream sourceDocumentStream = new MemoryStream(fileAsset.FileData))
+        using (MemoryStream targetDocumentStream = new MemoryStream())
+        {
+            FileRef inputDocumentRef = FileRef.CreateFromStream(sourceDocumentStream, MimeTypesMap.GetMimeType(fileAsset.FileName));
+            protectPdfOperation.SetInput(inputDocumentRef);
+            FileRef outputDocumentRefs = protectPdfOperation.Execute(executionContext);
+            outputDocumentRefs.SaveAs(targetDocumentStream);
+            return targetDocumentStream.ToArray();
+        }
     }
     
     
@@ -130,7 +178,7 @@ public class AdobeServices : IAdobeServices
         return ExecutionContext.Create(credentials);
     }
 
-    private ExportPDFTargetFormat GetExportTargetFormat(string targetFormat)
+    private ExportPDFTargetFormat ParseExportTargetFormat(string targetFormat)
     {
         switch (targetFormat.ToLower()) {
             case "doc":
@@ -148,7 +196,7 @@ public class AdobeServices : IAdobeServices
         }
     }
     
-    private ExportPDFToImagesTargetFormat GetExportPDFImagesTargetFormat(string targetFormat)
+    private ExportPDFToImagesTargetFormat ParseExportPdfImagesTargetFormat(string targetFormat)
     {
         switch (targetFormat.ToLower())
         {
@@ -160,4 +208,68 @@ public class AdobeServices : IAdobeServices
                 throw new ArgumentException($"Invalid target format of {targetFormat}");
         }
     }
+
+    private ContentEncryption ParseContentEncryption(string contentEncryption)
+    {
+        switch (contentEncryption.ToUpper())
+        {
+            case "ALL_CONTENT":
+                return ContentEncryption.ALL_CONTENT;
+            case "ALL_CONTENT_EXCEPT_METADATA":
+                return ContentEncryption.ALL_CONTENT_EXCEPT_METADATA;
+            default:
+                throw new ArgumentException($"Invalid content encryption of {contentEncryption}");
+        }
+    }
+
+    private EncryptionAlgorithm ParseEncryptionAlgorithm(string encryptionAlgorithm)
+    {
+        switch (encryptionAlgorithm.ToUpper())
+        {
+            case "AES_128":
+                return EncryptionAlgorithm.AES_128;
+            case "AES_256":
+                return EncryptionAlgorithm.AES_256;
+            default:
+                throw new ArgumentException($"Invalid encryption algorithm of {encryptionAlgorithm}");
+        }
+    }
+    
+    private Permissions? ParsePermissions(string[] permissions)
+    {
+        if (permissions.Length == 0) return null;
+
+        Permissions pdfPermissions = Permissions.CreateNew();
+
+        foreach (string permission in permissions)
+        {
+            pdfPermissions.AddPermission(ParsePermission(permission));
+        }
+
+        return pdfPermissions;
+    }
+
+    private Permission ParsePermission(string permission)
+    {
+        switch (permission.ToUpper()) {
+            case "COPY_CONTENT":
+                return Permission.COPY_CONTENT;
+            case "EDIT_CONTENT":
+                return Permission.EDIT_CONTENT;
+            case "EDIT_ANNOTATIONS":
+                return Permission.EDIT_ANNOTATIONS;
+            case "PRINT_LOW_QUALITY":
+                return Permission.PRINT_LOW_QUALITY;
+            case "EDIT_DOCUMENT_ASSEMBLY":
+                return Permission.EDIT_DOCUMENT_ASSEMBLY;
+            case "PRINT_HIGH_QUALITY":
+                return Permission.PRINT_HIGH_QUALITY;
+            case "EDIT_FILL_AND_SIGN_FORM_FIELDS":
+                return Permission.EDIT_FILL_AND_SIGN_FORM_FIELDS;
+            default:
+                throw new ArgumentException($"Invalid permission of {permission}");
+        }
+    }
+    
+    
 }
