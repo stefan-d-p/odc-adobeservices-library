@@ -2,9 +2,12 @@
 using Adobe.PDFServicesSDK.core;
 using Adobe.PDFServicesSDK.pdfops;
 using Adobe.PDFServicesSDK.io;
+using Adobe.PDFServicesSDK.options.compresspdf;
+using Adobe.PDFServicesSDK.options.documentmerge;
 using Adobe.PDFServicesSDK.options.exportpdf;
 using Adobe.PDFServicesSDK.options.exportpdftoimages;
 using Adobe.PDFServicesSDK.options.protectpdf;
+using Newtonsoft.Json.Linq;
 using Without.Systems.AdobeServices.Structures;
 using ExecutionContext = Adobe.PDFServicesSDK.ExecutionContext;
 
@@ -31,11 +34,40 @@ public class AdobeServices : IAdobeServices
         {
             FileRef inputDocumentRef = FileRef.CreateFromStream(sourceDocumentStream, MimeTypesMap.GetMimeType(fileAsset.FileName));
             createPdfOperation.SetInput(inputDocumentRef);
-            
             FileRef outputDocumentRef = createPdfOperation.Execute(executionContext);
             
             outputDocumentRef.SaveAs(targetDocumentStream);
             
+            return targetDocumentStream.ToArray();
+        }
+    }
+
+    /// <summary>
+    /// Assemble Microsoft Word or PDF documents by merging JSON data with a Microsoft Word Template document
+    /// </summary>
+    /// <param name="clientId">Adobe Services Client Id</param>
+    /// <param name="clientSecret">Adobe Services Secret Key</param>
+    /// <param name="templateDocument">Microsoft Word Template document</param>
+    /// <param name="jsonData">Serialized JSON data to merge with template</param>
+    /// <param name="outputFormat">Specifies the output format. Supports docx or pdf</param>
+    /// <returns>Binary Data of assembled document</returns>
+    public byte[] GenerateDocument(string clientId, string clientSecret, FileAsset templateDocument, string jsonData, string outputFormat)
+    {
+        JObject jsonObject = JObject.Parse(jsonData);
+        
+        ExecutionContext executionContext = CreateExecutionContext(clientId, clientSecret);
+
+        DocumentMergeOptions options = new DocumentMergeOptions(jsonObject, ParseOutputFormat(outputFormat));
+        DocumentMergeOperation documentMergeOperation = DocumentMergeOperation.CreateNew(options);
+        
+        using (MemoryStream templateDocumentStream = new MemoryStream(templateDocument.FileData))
+        using (MemoryStream targetDocumentStream = new MemoryStream())
+        {
+            FileRef inputDocumentRef = FileRef.CreateFromStream(templateDocumentStream,
+                MimeTypesMap.GetMimeType(templateDocument.FileName));
+            documentMergeOperation.SetInput(inputDocumentRef);
+            FileRef outputDocumentRef = documentMergeOperation.Execute(executionContext);
+            outputDocumentRef.SaveAs(targetDocumentStream);
             return targetDocumentStream.ToArray();
         }
     }
@@ -159,7 +191,41 @@ public class AdobeServices : IAdobeServices
             return targetDocumentStream.ToArray();
         }
     }
-    
+
+
+    public byte[] UnprotectDocument(string clientId, string clientSecret, FileAsset fileAsset, string password)
+    {
+        ExecutionContext executionContext = CreateExecutionContext(clientId, clientSecret);
+        
+        RemoveProtectionOperation removeProtectionOperation = RemoveProtectionOperation.CreateNew();
+        
+        using (MemoryStream sourceDocumentStream = new MemoryStream(fileAsset.FileData))
+        using (MemoryStream targetDocumentStream = new MemoryStream())
+        {
+            FileRef inputDocumentRef = FileRef.CreateFromStream(sourceDocumentStream, MimeTypesMap.GetMimeType(fileAsset.FileName));
+            removeProtectionOperation.SetInput(inputDocumentRef);
+            removeProtectionOperation.SetPassword(password);
+            FileRef outputDocumentRef = removeProtectionOperation.Execute(executionContext);
+            outputDocumentRef.SaveAs(targetDocumentStream);
+            return targetDocumentStream.ToArray();
+        }
+    }
+
+    public byte[] CompressDocument(string clientId, string clientSecret, FileAsset fileAsset)
+    {
+        ExecutionContext executionContext = CreateExecutionContext(clientId, clientSecret);
+        CompressPDFOperation compressPdfOperation = CompressPDFOperation.CreateNew();
+        
+        using (MemoryStream sourceDocumentStream = new MemoryStream(fileAsset.FileData))
+        using (MemoryStream targetDocumentStream = new MemoryStream())
+        {
+            FileRef inputDocumentRef = FileRef.CreateFromStream(sourceDocumentStream, MimeTypesMap.GetMimeType(fileAsset.FileName));
+            compressPdfOperation.SetInput(inputDocumentRef);
+            FileRef outputDocumentRef = compressPdfOperation.Execute(executionContext);
+            outputDocumentRef.SaveAs(targetDocumentStream);
+            return targetDocumentStream.ToArray();
+        }
+    }
     
 
     /// <summary>
@@ -176,6 +242,19 @@ public class AdobeServices : IAdobeServices
             .Build();
         
         return ExecutionContext.Create(credentials);
+    }
+
+    private OutputFormat ParseOutputFormat(string outputFormat)
+    {
+        switch (outputFormat.ToLower())
+        {
+            case "docx":
+                return OutputFormat.DOCX;
+            case "pdf":
+                return OutputFormat.PDF;
+            default:
+                throw new ArgumentException($"Invalid output format of {outputFormat}");
+        }
     }
 
     private ExportPDFTargetFormat ParseExportTargetFormat(string targetFormat)

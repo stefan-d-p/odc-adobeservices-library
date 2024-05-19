@@ -28,6 +28,14 @@
       <EmbeddedResource Include="Resources\OcrDocument.png" />
       <None Remove="Resources\ImageDocument.png" />
       <EmbeddedResource Include="Resources\ImageDocument.png" />
+      <None Remove="Resources\GenerateDocument.png" />
+      <EmbeddedResource Include="Resources\GenerateDocument.png" />
+      <None Remove="Resources\ProtectDocument.png" />
+      <EmbeddedResource Include="Resources\ProtectDocument.png" />
+      <None Remove="Resources\UnprotectDocument.png" />
+      <EmbeddedResource Include="Resources\UnprotectDocument.png" />
+      <None Remove="Resources\CompressDocument.png" />
+      <EmbeddedResource Include="Resources\CompressDocument.png" />
     </ItemGroup>
 
 </Project>

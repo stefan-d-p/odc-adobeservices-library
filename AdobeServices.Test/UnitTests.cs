@@ -44,4 +44,43 @@ public class Tests
         var result = _actions.ImageDocument(ClientId, ClientSecret, FileAsset.Create(inputFile, "samplepdf.pdf"), "png");
         Assert.That(result, Is.Not.Null);
     }
+
+    [Test]
+    public void Protect_PDF_OwnerPassword()
+    {
+        byte[] inputFile = File.ReadAllBytes(@"docs\SamplePDF.pdf");
+        ProtectDocumentOptions options = new ProtectDocumentOptions
+        {
+            OwnerPassword = "testpassword",
+            ContentEncryption = "ALL_CONTENT",
+            EncryptionAlgorithm = "AES_128"
+        };
+        
+        var result = _actions.ProtectDocument(ClientId, ClientSecret, FileAsset.Create(inputFile, "samplepdf.pdf"), options);
+        Assert.That(result, Is.Not.Null);
+    }
+    
+    [Test]
+    public void Protect_PDF_UserPassword()
+    {
+        byte[] inputFile = File.ReadAllBytes(@"docs\SamplePDF.pdf");
+        ProtectDocumentOptions options = new ProtectDocumentOptions
+        {
+            OwnerPassword = "testpassword",
+            UserPassword = "openpassword",
+            ContentEncryption = "ALL_CONTENT",
+            EncryptionAlgorithm = "AES_128"
+        };
+        
+        var result = _actions.ProtectDocument(ClientId, ClientSecret, FileAsset.Create(inputFile, "samplepdf.pdf"), options);
+        Assert.That(result, Is.Not.Null);
+    }
+
+    [Test]
+    public void Compress_PDF_Document()
+    {
+        byte[] inputFile = File.ReadAllBytes(@"docs\SamplePDF.pdf");
+        var result = _actions.CompressDocument(ClientId, ClientSecret, FileAsset.Create(inputFile, "samplepdf.pdf"));
+        Assert.That(result, Is.Not.Null);
+    }
 }

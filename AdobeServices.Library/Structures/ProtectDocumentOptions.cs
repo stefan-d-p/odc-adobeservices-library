@@ -34,6 +34,7 @@ public struct ProtectDocumentOptions
     [OSStructureField(
         Description = "Encryption Algorithm. Supported values are AES_128 and AES_256",
         DataType = OSDataType.Text,
-        IsMandatory = true)]
+        IsMandatory = false,
+        DefaultValue = "AES_256")]
     public string EncryptionAlgorithm;
 }

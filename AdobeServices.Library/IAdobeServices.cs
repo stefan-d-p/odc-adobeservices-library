@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using OutSystems.ExternalLibraries.SDK;
 using Without.Systems.AdobeServices.Structures;
 
@@ -29,6 +30,35 @@ namespace Without.Systems.AdobeServices
                 Description = "Source document and filename",
                 DataType = OSDataType.InferredFromDotNetType)]
             FileAsset fileAsset);
+
+        [OSAction(
+            Description =
+                "Assemble a Microsoft Word or PDF document by merging data with a Microsoft Word Template Document",
+            ReturnName = "result",
+            ReturnType = OSDataType.BinaryData,
+            ReturnDescription = "Assembled Document",
+            IconResourceName = "Without.Systems.AdobeServices.Resources.GenerateDocument.png")]
+        byte[] GenerateDocument(
+            [OSParameter(
+                Description = "Adobe Services Client Id",
+                DataType = OSDataType.Text)]
+            string clientId,
+            [OSParameter(
+                Description = "Adobe Services Client Secret",
+                DataType = OSDataType.Text)]
+            string clientSecret,
+            [OSParameter(
+                Description = "Microsoft Word Template Document",
+                DataType = OSDataType.BinaryData)]
+            FileAsset templateDocument, 
+            [OSParameter(
+                Description = "Serialized JSON data to merge with template document",
+                DataType = OSDataType.Text)]
+            string jsonData,
+            [OSParameter(
+                Description = "Output format of the generated document. Supports docx and pdf als values.",
+                DataType = OSDataType.Text)]
+            string outputFormat);
 
         [OSAction(
             Description = "Convert a PDF File to a non-PDF File",
@@ -97,7 +127,8 @@ namespace Without.Systems.AdobeServices
             ReturnType = OSDataType.BinaryData,
             ReturnDescription = "ZIP archive containing the image files",
             IconResourceName = "Without.Systems.AdobeServices.Resources.ImageDocument.png")]
-        byte[] ImageDocument([OSParameter(
+        byte[] ImageDocument(
+            [OSParameter(
                 Description = "Adobe Services Client Id",
                 DataType = OSDataType.Text)]
             string clientId,
@@ -113,5 +144,72 @@ namespace Without.Systems.AdobeServices
                 Description = "Target format of images. Allows values are png and jpeg",
                 DataType = OSDataType.Text)]
             string targetFormat);
+
+        [OSAction(
+            Description = "Protect a PDF Document",
+            ReturnName = "pdf",
+            ReturnType = OSDataType.BinaryData,
+            ReturnDescription = "Protected PDF Document",
+            IconResourceName = "Without.Systems.AdobeServices.Resources.ProtectDocument.png")]
+        byte[] ProtectDocument(
+            [OSParameter(
+                Description = "Adobe Services Client Id",
+                DataType = OSDataType.Text)]
+            string clientId,
+            [OSParameter(
+                Description = "Adobe Services Client Secret",
+                DataType = OSDataType.Text)]
+            string clientSecret,
+            [OSParameter(
+                Description = "Source document and filename",
+                DataType = OSDataType.InferredFromDotNetType)]
+            FileAsset fileAsset,
+            [OSParameter(
+                Description = "Protect Document Options")]
+            ProtectDocumentOptions options);
+
+        [OSAction(
+            Description = "Remove protection from a PDF document",
+            ReturnName = "pdf",
+            ReturnType = OSDataType.BinaryData,
+            ReturnDescription = "Unprotected PDF Document",
+            IconResourceName = "Without.Systems.AdobeServices.Resources.UnprotectDocument.png")]
+        byte[] UnprotectDocument(
+            [OSParameter(
+                Description = "Adobe Services Client Id",
+                DataType = OSDataType.Text)]
+            string clientId,
+            [OSParameter(
+                Description = "Adobe Services Client Secret",
+                DataType = OSDataType.Text)]
+            string clientSecret,
+            [OSParameter(
+                Description = "Source document and filename",
+                DataType = OSDataType.InferredFromDotNetType)]
+            FileAsset fileAsset,
+            [OSParameter(
+                Description = "Password to unprotect the document",
+                DataType = OSDataType.Text)]
+            string password);
+
+        [OSAction(
+            Description = "Compress a PDF Document",
+            ReturnName = "pdf",
+            ReturnType = OSDataType.BinaryData,
+            ReturnDescription = "Compressed PDF Document",
+            IconResourceName = "Without.Systems.AdobeServices.Resources.CompressDocument.png")]
+        public byte[] CompressDocument(
+            [OSParameter(
+                Description = "Adobe Services Client Id",
+                DataType = OSDataType.Text)]
+            string clientId,
+            [OSParameter(
+                Description = "Adobe Services Client Secret",
+                DataType = OSDataType.Text)]
+            string clientSecret,
+            [OSParameter(
+                Description = "Source document and filename",
+                DataType = OSDataType.InferredFromDotNetType)]
+            FileAsset fileAsset);
     }
 }
